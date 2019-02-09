@@ -233,12 +233,14 @@ if ( typeof Object.create !== 'function' ) {
 				self.lensRound = '';
 
 				if(self.options.zoomType == "lens") {
-
+var zoomimagewidth=  String(self.options.zoomimageRatio * self.largeWidth);
 					self.lensStyle = "background-position: 0px 0px;"
 						+ "float: left;display: none;"
 						+ "border: " + String(self.options.borderSize) + "px solid " + self.options.borderColour+";"
 						+ "width:"+ String(self.options.lensSize) +"px;"
 						+ "height:"+ String(self.options.lensSize)+"px;"
++"background-size:"+ zoomimagewidth +"px auto;"
+
 						+ "background-repeat: no-repeat;position: absolute;";
 
 
@@ -256,10 +258,8 @@ if ( typeof Object.create !== 'function' ) {
 
 				//create the div's                                                + ""
 				//self.zoomContainer = $('<div/>').addClass('zoomContainer').css({"position":"relative", "height":self.nzHeight, "width":self.nzWidth});
-
 				self.zoomContainer = $('<div class="zoomContainer" style="-webkit-transform: translateZ(0);position:absolute;left:'+self.nzOffset.left+'px;top:'+self.nzOffset.top+'px;height:'+self.nzHeight+'px;width:'+self.nzWidth+'px;"></div>');
 				$('body').append(self.zoomContainer);	
-
 
 				//this will add overflow hidden and contrain the lens on lens mode       
 				if(self.options.containLensZoom && self.options.zoomType == "lens"){
@@ -350,7 +350,7 @@ if ( typeof Object.create !== 'function' ) {
 					self.setPosition(touch); 
 
 				});  	
-				self.zoomContainer.bind('touchend', function(e){ 
+				self.zoomContainer.bind('touchend', function(e){
 					self.showHideWindow("hide");
 					if(self.options.showLens) {self.showHideLens("hide");}
 					if(self.options.tint && self.options.zoomType != "inner") {self.showHideTint("hide");}
@@ -447,14 +447,11 @@ if ( typeof Object.create !== 'function' ) {
 
 				}).mouseleave(function(){
 					if(!self.scrollLock){
-						self.setElements("hide");
+                                                self.setElements("hide");
             self.options.onDestroy(self.$elem);
-					}
+                                        }
 				});
 				//end ove image
-
-
-
 
 
 				if(self.options.zoomType != "inner") {
@@ -674,7 +671,7 @@ if ( typeof Object.create !== 'function' ) {
 						//set background position of lens
 						self.lensLeftPos = String(Math.floor(self.mouseLeft - self.zoomLens.width() / 2));
 						self.lensTopPos = String(Math.floor(self.mouseTop - self.zoomLens.height() / 2));
-
+//console.log(self.lensLeftPos +"/"+self.lensTopPos);
 
 					}
 					//adjust the background position if the mouse is in one of the outer regions 
@@ -709,9 +706,13 @@ if ( typeof Object.create !== 'function' ) {
 
 					}
 					//if lens zoom
-					if(self.options.zoomType == "lens") {  
-						self.windowLeftPos = String(((e.pageX - self.nzOffset.left) * self.widthRatio - self.zoomLens.width() / 2) * (-1));   
-						self.windowTopPos = String(((e.pageY - self.nzOffset.top) * self.heightRatio - self.zoomLens.height() / 2) * (-1));
+					if(self.options.zoomType == "lens") { 
+						self.windowLeftPos = String(((e.pageX - self.nzOffset.left) *
+self.options.zoomimageRatio * self.widthRatio - self.zoomLens.width() / 2) * (-1));   
+						self.windowTopPos = String(((e.pageY - self.nzOffset.top) * self.options.zoomimageRatio * self.heightRatio - self.zoomLens.height() / 2) * (-1));
+
+
+
 
 						self.zoomLens.css({ backgroundPosition: self.windowLeftPos + 'px ' + self.windowTopPos + 'px' });
 
@@ -1394,7 +1395,7 @@ if ( typeof Object.create !== 'function' ) {
 				self.currentZoomLevel = self.options.zoomLevel;
 
 				//ratio of the large to small image
-				self.widthRatio = self.largeWidth / self.nzWidth;
+				self.widthRatio =  self.largeWidth / self.nzWidth;
 				self.heightRatio = self.largeHeight / self.nzHeight; 
 
 				//NEED TO ADD THE LENS SIZE FOR ROUND
@@ -1784,7 +1785,8 @@ if ( typeof Object.create !== 'function' ) {
       onDestroy: function() {},
 			onZoomedImageLoaded: function() {},
 			onImageSwap: $.noop,
-			onImageSwapComplete: $.noop
+			onImageSwapComplete: $.noop,
+zoomimageRatio:1
 	};
 
 })( jQuery, window, document );
